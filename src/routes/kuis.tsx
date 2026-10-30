@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PageTitle } from "@/components/SiteHeader";
 import { KUIS } from "@/lib/kuis";
 import { rupiah } from "@/lib/accounting";
+import { playFeedback } from "@/lib/sound";
 import { useProgress } from "@/lib/progress";
 
 export const Route = createFileRoute("/kuis")({
@@ -35,7 +36,7 @@ function KuisPage() {
   };
   const canSubmit = q.kind === "hitung" ? input.trim() !== "" : ans !== null;
 
-  const submit = () => { setSubmitted(true); if (isCorrect()) setScore((s) => s + 1); };
+  const submit = () => { const ok = isCorrect(); setSubmitted(true); playFeedback(ok); if (ok) setScore((s) => s + 1); };
   const next = () => {
     if (i === KUIS.length - 1) {
       saveQuiz({ correct: score, total: KUIS.length, date: new Date().toISOString() });

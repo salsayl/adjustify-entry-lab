@@ -4,6 +4,7 @@ import { PageTitle } from "@/components/SiteHeader";
 import { JurnalTable } from "@/components/JurnalTable";
 import { rupiah } from "@/lib/accounting";
 import { AKUN, SIMS, SIM_TYPES } from "@/lib/simulasi";
+import { playFeedback } from "@/lib/sound";
 import { useProgress } from "@/lib/progress";
 
 export const Route = createFileRoute("/simulasi")({
@@ -37,7 +38,7 @@ function SimPage() {
 
   const resetForm = () => { setAmount(""); setDebit(""); setKredit(""); setChecked(false); };
   const next = () => { setIdx((i) => (i + 1) % list.length); resetForm(); };
-  const check = () => { setChecked(true); if (okAmount && okDebit && okKredit) markSim(sim.id); };
+  const check = () => { setChecked(true); playFeedback(allOk); if (okAmount && okDebit && okKredit) markSim(sim.id); };
 
   return (
     <>
