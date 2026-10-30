@@ -35,12 +35,12 @@ function ProfilPage() {
   }, [profile]);
 
   const saveProfile = async () => {
-    if (name.trim().length < 3) return toast.error("Nama minimal 3 huruf.");
+    if (name.trim().length < 3) { toast.error("Nama minimal 3 huruf."); return; }
     if (!profile) return;
     setBusy(true);
     const { error } = await supabase.from("profiles").update({ full_name: name.trim(), kelas }).eq("id", profile.id);
     setBusy(false);
-    if (error) return toast.error("Gagal menyimpan profil.");
+    if (error) { toast.error("Gagal menyimpan profil."); return; }
     await qc.invalidateQueries({ queryKey: ["profile"] });
     toast.success("Profil berhasil disimpan.");
   };

@@ -2,6 +2,7 @@
 // sehingga setiap siswa hanya bisa mengakses datanya sendiri.
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 export type Profile = { id: string; full_name: string; kelas: string };
 export type MateriProgressRow = { materi_slug: string; completed: boolean; last_slide: number; updated_at: string };
@@ -92,7 +93,7 @@ export function useLearningActions() {
         correct_count: a.correct,
         total_count: a.total,
         duration_seconds: a.durationSeconds,
-        answers: a.answers as unknown as Record<string, unknown>[],
+        answers: a.answers as unknown as Json,
       });
       if (error) throw error;
       await done();
