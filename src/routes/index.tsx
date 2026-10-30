@@ -1,14 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import hero from "@/assets/hero.jpg";
-import { useProgress } from "@/lib/progress";
-import { MATERI } from "@/lib/materi";
-import { SIMS } from "@/lib/simulasi";
+import { useSession } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ADJUSTIFY — Learn. Practice. Understand." },
-      { name: "description", content: "Belajar jurnal penyesuaian dengan materi, video, simulasi perhitungan, dan kuis interaktif." },
+      { name: "description", content: "Belajar jurnal penyesuaian dengan materi 8 bab, video, audio narasi, simulasi perhitungan, dan kuis interaktif." },
       { property: "og:title", content: "ADJUSTIFY — Learn. Practice. Understand." },
       { property: "og:description", content: "Media pembelajaran interaktif jurnal penyesuaian untuk mahasiswa Pendidikan Akuntansi." },
     ],
@@ -24,18 +22,14 @@ const TUJUAN = [
 ];
 
 const FITUR = [
-  { to: "/materi", icon: "📚", t: "Materi", d: "9 modul ringkas dengan rumus & contoh jurnal.", bg: "bg-lavender" },
-  { to: "/video", icon: "🎬", t: "Video", d: "Ruang video per submateri.", bg: "bg-pink" },
+  { to: "/materi", icon: "📚", t: "Materi 8 Bab", d: "Slide bersuara dengan rumus & contoh jurnal.", bg: "bg-lavender" },
+  { to: "/video", icon: "🎬", t: "Video", d: "Ruang video pembelajaran per bab.", bg: "bg-pink" },
   { to: "/simulasi", icon: "🧮", t: "Simulasi", d: "Hitung nominal & pilih akun debit-kredit.", bg: "bg-cream" },
-  { to: "/kuis", icon: "📝", t: "Kuis", d: "Soal bertahap mudah sampai sulit.", bg: "bg-sage" },
+  { to: "/kuis", icon: "📝", t: "Kuis", d: "Soal bertahap dengan pembahasan di akhir.", bg: "bg-sage" },
 ] as const;
 
 function Index() {
-  const { progress } = useProgress();
-  const items = [
-    { l: "Materi dibaca", v: progress.materiRead.length, t: MATERI.length },
-    { l: "Simulasi benar", v: progress.simSolved.length, t: SIMS.length },
-  ];
+  const signedIn = useSession();
   return (
     <>
       <section className="bg-hero">
@@ -50,11 +44,17 @@ function Index() {
             <p className="mt-3 font-display text-xl text-secondary-foreground">Learn. Practice. Understand.</p>
             <p className="mt-4 max-w-md text-muted-foreground">
               Media pembelajaran interaktif untuk membantu mahasiswa memahami konsep, menghitung nominal, dan
-              menyusun jurnal penyesuaian dengan lebih mudah.
+              menyusun jurnal penyesuaian dengan lebih mudah — semua progresmu tersimpan di akun pribadimu.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/materi" className="btn btn-primary">Mulai Belajar →</Link>
-              <Link to="/simulasi" className="btn btn-outline">Coba Simulasi</Link>
+              {signedIn ? (
+                <Link to="/dashboard" className="btn btn-primary">Buka Dashboard →</Link>
+              ) : (
+                <>
+                  <Link to="/auth" className="btn btn-primary">Daftar & Mulai Belajar →</Link>
+                  <Link to="/auth" className="btn btn-outline">Masuk</Link>
+                </>
+              )}
             </div>
           </div>
           <img src={hero} alt="Ilustrasi buku besar, kalkulator, dan koin" width={1024} height={1024}
@@ -62,10 +62,10 @@ function Index() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:grid-cols-[1.3fr_1fr]">
+      <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="card-soft p-6">
           <h2 className="text-2xl font-bold">Tujuan Pembelajaran</h2>
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             {TUJUAN.map((t, i) => (
               <li key={t} className="flex gap-3">
                 <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sage text-sm font-bold">{i + 1}</span>
@@ -73,22 +73,6 @@ function Index() {
               </li>
             ))}
           </ul>
-        </div>
-        <div className="card-soft p-6">
-          <h2 className="text-2xl font-bold">Progress Belajarmu</h2>
-          <div className="mt-4 space-y-4">
-            {items.map((x) => (
-              <div key={x.l}>
-                <div className="flex justify-between text-sm"><span>{x.l}</span><span className="font-semibold">{x.v}/{x.t}</span></div>
-                <div className="mt-1 h-2.5 rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(x.v / x.t) * 100}%` }} />
-                </div>
-              </div>
-            ))}
-            <p className="text-sm text-muted-foreground">
-              Kuis terakhir: {progress.quiz ? `${progress.quiz.correct}/${progress.quiz.total} benar` : "belum dikerjakan"}
-            </p>
-          </div>
         </div>
       </section>
 
@@ -103,6 +87,9 @@ function Index() {
             </Link>
           ))}
         </div>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Semua fitur belajar memerlukan akun — gratis dan cepat daftarnya.
+        </p>
       </section>
     </>
   );
