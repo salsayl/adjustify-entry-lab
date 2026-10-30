@@ -10,33 +10,83 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HasilRouteImport } from './routes/hasil'
+import { Route as KuisRouteImport } from './routes/kuis'
+import { Route as MateriRouteImport } from './routes/materi'
+import { Route as SimulasiRouteImport } from './routes/simulasi'
+import { Route as VideoRouteImport } from './routes/video'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HasilRoute = HasilRouteImport.update({
+  id: '/hasil',
+  path: '/hasil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KuisRoute = KuisRouteImport.update({
+  id: '/kuis',
+  path: '/kuis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MateriRoute = MateriRouteImport.update({
+  id: '/materi',
+  path: '/materi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulasiRoute = SimulasiRouteImport.update({
+  id: '/simulasi',
+  path: '/simulasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideoRoute = VideoRouteImport.update({
+  id: '/video',
+  path: '/video',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/hasil': typeof HasilRoute
+  '/kuis': typeof KuisRoute
+  '/materi': typeof MateriRoute
+  '/simulasi': typeof SimulasiRoute
+  '/video': typeof VideoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/hasil': typeof HasilRoute
+  '/kuis': typeof KuisRoute
+  '/materi': typeof MateriRoute
+  '/simulasi': typeof SimulasiRoute
+  '/video': typeof VideoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/hasil': typeof HasilRoute
+  '/kuis': typeof KuisRoute
+  '/materi': typeof MateriRoute
+  '/simulasi': typeof SimulasiRoute
+  '/video': typeof VideoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/hasil' | '/kuis' | '/materi' | '/simulasi' | '/video'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/hasil' | '/kuis' | '/materi' | '/simulasi' | '/video'
+  id: '__root__' | '/' | '/hasil' | '/kuis' | '/materi' | '/simulasi' | '/video'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HasilRoute: typeof HasilRoute
+  KuisRoute: typeof KuisRoute
+  MateriRoute: typeof MateriRoute
+  SimulasiRoute: typeof SimulasiRoute
+  VideoRoute: typeof VideoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +98,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hasil': {
+      id: '/hasil'
+      path: '/hasil'
+      fullPath: '/hasil'
+      preLoaderRoute: typeof HasilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kuis': {
+      id: '/kuis'
+      path: '/kuis'
+      fullPath: '/kuis'
+      preLoaderRoute: typeof KuisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/materi': {
+      id: '/materi'
+      path: '/materi'
+      fullPath: '/materi'
+      preLoaderRoute: typeof MateriRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulasi': {
+      id: '/simulasi'
+      path: '/simulasi'
+      fullPath: '/simulasi'
+      preLoaderRoute: typeof SimulasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/video': {
+      id: '/video'
+      path: '/video'
+      fullPath: '/video'
+      preLoaderRoute: typeof VideoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HasilRoute: HasilRoute,
+  KuisRoute: KuisRoute,
+  MateriRoute: MateriRoute,
+  SimulasiRoute: SimulasiRoute,
+  VideoRoute: VideoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

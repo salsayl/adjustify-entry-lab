@@ -17,7 +17,7 @@ export const Route = createFileRoute("/video")({
 
 const KEY = "adjustify-videos";
 
-export function youtubeId(url: string): string | null {
+function youtubeId(url: string): string | null {
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
   return m ? m[1] : null;
 }
