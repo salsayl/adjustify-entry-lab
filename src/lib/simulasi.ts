@@ -24,6 +24,7 @@ export const AKUN = [
   "Utang Bunga",
   "Piutang Bunga",
   "Pendapatan Bunga",
+  "Piutang Jasa",
   "Beban Penyusutan Peralatan",
   "Akumulasi Penyusutan Peralatan",
   "Beban Penyusutan Kendaraan",
@@ -110,9 +111,9 @@ export const SIMS: Sim[] = [
   },
   {
     id: "d2", type: SIM_TYPES[3], title: "Jasa selesai belum ditagih",
-    kasus: "Pada 31 Desember 2026, perusahaan konsultan telah menyelesaikan pekerjaan senilai Rp2.500.000, tetapi tagihan baru dikirim bulan Januari. Gunakan akun Piutang Bunga? Tidak — pilih akun yang tepat dari daftar untuk pendapatan jasa yang masih harus diterima (gunakan Kas jika tidak ada akun piutang yang cocok bukanlah jawaban yang benar).",
-    amount: d2, debit: "Piutang Bunga", kredit: "Pendapatan Jasa",
-    steps: [],
+    kasus: "Pada 31 Desember 2026, perusahaan konsultan telah menyelesaikan pekerjaan untuk klien senilai Rp2.500.000, tetapi tagihan baru dikirim dan dibayar bulan Januari 2027. Buat jurnal penyesuaian.",
+    amount: d2, debit: "Piutang Jasa", kredit: "Pendapatan Jasa",
+    steps: ["Jasa sudah selesai, jadi pendapatan sudah menjadi hak perusahaan di tahun 2026.", "Uang belum diterima, maka dicatat sebagai piutang.", `Nominal = ${rupiah(d2)}`],
   },
   {
     id: "e1", type: SIM_TYPES[4], title: "Penyusutan peralatan",
@@ -138,4 +139,4 @@ export const SIMS: Sim[] = [
     amount: f2, debit: "Beban Perlengkapan", kredit: "Perlengkapan",
     steps: ["Saldo perlengkapan = Rp1.250.000 + Rp2.500.000 = Rp3.750.000", `Terpakai = Rp3.750.000 − Rp1.250.000 = ${rupiah(f2)}`],
   },
-].filter((s) => s.id !== "d2");
+];
