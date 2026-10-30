@@ -14,7 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      materi_progress: {
+        Row: {
+          completed: boolean
+          last_slide: number
+          materi_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          last_slide?: number
+          materi_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          last_slide?: number
+          materi_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materi_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          kelas: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id: string
+          kelas?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          kelas?: string
+        }
+        Relationships: []
+      }
+      quiz_attempts: {
+        Row: {
+          answers: Json
+          correct_count: number
+          created_at: string
+          duration_seconds: number
+          id: string
+          total_count: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          correct_count: number
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          total_count: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          correct_count?: number
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          total_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulation_history: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          is_correct: boolean
+          sim_id: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          sim_id: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          sim_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulation_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
