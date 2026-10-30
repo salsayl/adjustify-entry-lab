@@ -46,12 +46,12 @@ function ProfilPage() {
   };
 
   const changePassword = async () => {
-    if (newPass.length < 6) return toast.error("Password baru minimal 6 karakter.");
-    if (!curPass) return toast.error("Isi password saat ini dulu ya.");
+    if (newPass.length < 6) { toast.error("Password baru minimal 6 karakter."); return; }
+    if (!curPass) { toast.error("Isi password saat ini dulu ya."); return; }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password: newPass, current_password: curPass });
     setBusy(false);
-    if (error) return toast.error(error.message.includes("Current password") ? "Password saat ini salah." : error.message);
+    if (error) { toast.error(error.message.includes("Current password") ? "Password saat ini salah." : error.message); return; }
     setCurPass(""); setNewPass("");
     toast.success("Password berhasil diubah.");
   };
