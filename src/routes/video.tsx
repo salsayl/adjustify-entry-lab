@@ -19,7 +19,7 @@ const KEY = "adjustify-videos";
 
 function youtubeId(url: string): string | null {
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
-  return m ? m[1] : null;
+  return m?.[1] ?? null;
 }
 
 function VideoPage() {
@@ -36,7 +36,7 @@ function VideoPage() {
       <PageTitle tag="Video" title="Video Pembelajaran" desc="Setiap submateri memiliki ruang video. Tempel tautan YouTube yang dibagikan dosen untuk menampilkannya di sini." />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-2">
         {MATERI.map((m) => {
-          const id = links[m.slug] ? youtubeId(links[m.slug]) : null;
+          const id = links[m.slug] ? youtubeId(links[m.slug]!) : null;
           return (
             <div key={m.slug} className="card-soft p-5">
               <h2 className="text-lg font-bold">{m.icon} {m.title}</h2>

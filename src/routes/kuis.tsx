@@ -27,7 +27,7 @@ function KuisPage() {
   const [score, setScore] = useState(0);
   const { saveQuiz } = useProgress();
   const nav = useNavigate();
-  const q = KUIS[i];
+  const q = KUIS[i]!;
 
   const isCorrect = () => {
     if (q.kind === "hitung") return Number(input.replace(/\D/g, "")) === q.answer;

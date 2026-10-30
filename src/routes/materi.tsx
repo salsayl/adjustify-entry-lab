@@ -18,7 +18,7 @@ export const Route = createFileRoute("/materi")({
 });
 
 function MateriPage() {
-  const [open, setOpen] = useState<string | null>(MATERI[0].slug);
+  const [open, setOpen] = useState<string | null>(MATERI[0]!.slug);
   const { progress, markMateri } = useProgress();
   return (
     <>
@@ -60,7 +60,7 @@ function MateriPage() {
                       {done ? "✓ Sudah dibaca" : "Tandai selesai"}
                     </button>
                     {i < MATERI.length - 1 && (
-                      <button className="btn btn-outline" onClick={() => { markMateri(m.slug); setOpen(MATERI[i + 1].slug); }}>
+                      <button className="btn btn-outline" onClick={() => { markMateri(m.slug); setOpen(MATERI[i + 1]!.slug); }}>
                         Modul berikutnya →
                       </button>
                     )}

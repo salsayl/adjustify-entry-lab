@@ -22,7 +22,7 @@ function SimPage() {
   const [type, setType] = useState("Semua");
   const list = type === "Semua" ? SIMS : SIMS.filter((s) => s.type === type);
   const [idx, setIdx] = useState(0);
-  const sim = list[idx % list.length];
+  const sim = list[idx % list.length]!;
   const [amount, setAmount] = useState("");
   const [debit, setDebit] = useState("");
   const [kredit, setKredit] = useState("");
