@@ -39,7 +39,7 @@ function ResetPage() {
     setBusy(false);
     if (error) return setErr(error.message);
     toast.success("Password berhasil diubah. Silakan masuk.");
-    nav({ to: "/auth" });
+    nav({ to: "/auth", search: { redirect: "" } });
   };
 
   return (
