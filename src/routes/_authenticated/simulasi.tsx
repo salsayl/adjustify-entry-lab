@@ -5,9 +5,9 @@ import { JurnalTable } from "@/components/JurnalTable";
 import { rupiah } from "@/lib/accounting";
 import { AKUN, SIMS, SIM_TYPES } from "@/lib/simulasi";
 import { playFeedback } from "@/lib/sound";
-import { useProgress } from "@/lib/progress";
+import { useLearning, useLearningActions } from "@/lib/learning";
 
-export const Route = createFileRoute("/simulasi")({
+export const Route = createFileRoute("/_authenticated/simulasi")({
   head: () => ({
     meta: [
       { title: "Simulasi Perhitungan — ADJUSTIFY" },
@@ -28,7 +28,10 @@ function SimPage() {
   const [debit, setDebit] = useState("");
   const [kredit, setKredit] = useState("");
   const [checked, setChecked] = useState(false);
-  const { progress, markSim } = useProgress();
+  const [tries, setTries] = useState(0);
+  const { data: learning } = useLearning();
+  const actions = useLearningActions();
+  const solvedIds = new Set((learning?.sims ?? []).filter((s) => s.is_correct).map((s) => s.sim_id));
 
   const num = Number(amount.replace(/\D/g, ""));
   const okAmount = num === sim.amount;
@@ -36,9 +39,15 @@ function SimPage() {
   const okKredit = kredit === sim.kredit;
   const allOk = okAmount && okDebit && okKredit;
 
-  const resetForm = () => { setAmount(""); setDebit(""); setKredit(""); setChecked(false); };
+  const resetForm = () => { setAmount(""); setDebit(""); setKredit(""); setChecked(false); setTries(0); };
   const next = () => { setIdx((i) => (i + 1) % list.length); resetForm(); };
-  const check = () => { setChecked(true); playFeedback(allOk); if (okAmount && okDebit && okKredit) markSim(sim.id); };
+  const check = () => {
+    const n = tries + 1;
+    setTries(n);
+    setChecked(true);
+    playFeedback(allOk);
+    actions.saveSimulation(sim.id, allOk, n).catch(() => {});
+  };
 
   return (
     <>
@@ -57,7 +66,7 @@ function SimPage() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold">{sim.type}</span>
             <span className="text-xs text-muted-foreground">
-              Soal {(idx % list.length) + 1}/{list.length} · {progress.simSolved.includes(sim.id) ? "✓ pernah benar" : "belum selesai"}
+              Soal {(idx % list.length) + 1}/{list.length} · {solvedIds.has(sim.id) ? "✓ pernah benar" : "belum selesai"}
             </span>
           </div>
           <h2 className="mt-3 text-xl font-bold">{sim.title}</h2>

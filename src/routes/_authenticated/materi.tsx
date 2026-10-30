@@ -4,14 +4,14 @@ import { PageTitle } from "@/components/SiteHeader";
 import { JurnalTable } from "@/components/JurnalTable";
 import { MATERI } from "@/lib/materi";
 import { buildSlides } from "@/lib/slides";
-import { canSpeak, speak, stopSpeak } from "@/lib/sound";
-import { useProgress } from "@/lib/progress";
+import { canSpeak, pauseSpeak, resumeSpeak, speak, stopSpeak } from "@/lib/sound";
+import { useLearning, useLearningActions } from "@/lib/learning";
 
-export const Route = createFileRoute("/materi")({
+export const Route = createFileRoute("/_authenticated/materi")({
   head: () => ({
     meta: [
       { title: "Materi Jurnal Penyesuaian — ADJUSTIFY" },
-      { name: "description", content: "Materi jurnal penyesuaian dalam bentuk slide bersuara, lengkap dengan rumus, contoh soal, dan jurnal." },
+      { name: "description", content: "Materi jurnal penyesuaian 8 bab dalam bentuk slide bersuara, lengkap dengan rumus, contoh soal, dan jurnal." },
       { property: "og:title", content: "Materi Jurnal Penyesuaian — ADJUSTIFY" },
       { property: "og:description", content: "Slide materi jurnal penyesuaian dengan narasi suara." },
     ],
@@ -24,19 +24,34 @@ function MateriPage() {
   const [si, setSi] = useState(0);
   const [auto, setAuto] = useState(false);
   const [talking, setTalking] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [rate, setRate] = useState(0.95);
+  const [volume, setVolume] = useState(1);
   const [voiceOk, setVoiceOk] = useState(true);
-  const { progress, markMateri } = useProgress();
+  const { data: learning } = useLearning();
+  const actions = useLearningActions();
   const m = MATERI[mi]!;
   const slides = useMemo(() => buildSlides(m), [m]);
   const slide = slides[si]!;
   const last = si === slides.length - 1;
   const touchX = useRef<number | null>(null);
+  const readSlugs = new Set((learning?.materi ?? []).filter((x) => x.completed).map((x) => x.materi_slug));
 
   useEffect(() => setVoiceOk(canSpeak()), []);
-  useEffect(() => { if (last) markMateri(m.slug); }, [last, m.slug]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (last) actions.markMateri(m.slug, true, si).catch(() => {});
+    else actions.markMateri(m.slug, readSlugs.has(m.slug), si).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [last, m.slug, si]);
 
-  const play = () => { setTalking(true); speak(slide.narasi, () => setTalking(false)); };
-  const stop = () => { stopSpeak(); setTalking(false); };
+  const play = () => {
+    setPaused(false);
+    setTalking(true);
+    speak(slide.narasi, { rate, volume, onEnd: () => { setTalking(false); setPaused(false); } });
+  };
+  const pause = () => { pauseSpeak(); setPaused(true); };
+  const resume = () => { resumeSpeak(); setPaused(false); };
+  const stop = () => { stopSpeak(); setTalking(false); setPaused(false); };
 
   useEffect(() => {
     if (auto) play(); else stop();
@@ -47,7 +62,7 @@ function MateriPage() {
     const n = si + d;
     if (n >= 0 && n < slides.length) setSi(n);
     else if (n >= slides.length && mi < MATERI.length - 1) { setMi(mi + 1); setSi(0); }
-    else if (n < 0 && mi > 0) { const pm = MATERI[mi - 1]!; setMi(mi - 1); setSi(buildSlides(pm).length - 1); }
+    else if (n < 0 && mi > 0) { setMi(mi - 1); setSi(buildSlides(MATERI[mi - 1]!).length - 1); }
   };
 
   useEffect(() => {
@@ -62,13 +77,13 @@ function MateriPage() {
 
   return (
     <>
-      <PageTitle tag="Materi" title="Slide Materi Bersuara" desc="Pelajari jurnal penyesuaian slide demi slide. Tekan 🔊 untuk mendengarkan penjelasannya." />
+      <PageTitle tag="Materi" title="Materi 8 Bab (Slide Bersuara)" desc="Pelajari jurnal penyesuaian bab demi bab, slide demi slide. Tekan ▶ untuk mendengarkan penjelasannya." />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="flex flex-wrap items-center gap-3">
           <select className="field max-w-md" value={mi} onChange={(e) => { setMi(Number(e.target.value)); setSi(0); }}>
             {MATERI.map((x, i) => (
               <option key={x.slug} value={i}>
-                {progress.materiRead.includes(x.slug) ? "✓ " : ""}Modul {i + 1}: {x.title}
+                {readSlugs.has(x.slug) ? "✓ " : ""}{x.title}
               </option>
             ))}
           </select>
@@ -91,10 +106,10 @@ function MateriPage() {
           }}
         >
           <div className="flex items-center justify-between border-b bg-muted/60 px-5 py-2 text-xs font-semibold text-muted-foreground">
-            <span>Modul {mi + 1} · {m.title}</span>
+            <span>{m.title}</span>
             <span>{si + 1} / {slides.length}</span>
           </div>
-          <div key={`${mi}-${si}`} className="fade-up flex flex-1 flex-col justify-center p-6 md:p-12">
+          <div key={`${mi}-${si}`} className="fade-up flex flex-1 flex-col justify-center p-6 md:p-10">
             {slide.kind === "judul" && (
               <div className="text-center">
                 <div className="float-slow mx-auto grid h-24 w-24 place-items-center rounded-3xl bg-lavender text-5xl">{slide.icon}</div>
@@ -116,8 +131,22 @@ function MateriPage() {
                 <h2 className="text-2xl font-bold md:text-4xl">{slide.title}</h2>
                 <div className={`mt-6 rounded-3xl p-6 md:p-8 ${slide.tone === "cream" ? "bg-cream" : "bg-pink"}`}>
                   <p className="text-sm font-semibold">{slide.label}</p>
-                  <p className="mt-2 text-xl font-medium leading-relaxed md:text-2xl">{slide.text}</p>
+                  <p className="mt-2 text-lg font-medium leading-relaxed md:text-xl">{slide.text}</p>
                 </div>
+              </div>
+            )}
+            {slide.kind === "list" && (
+              <div>
+                <h2 className="text-2xl font-bold md:text-4xl">{slide.title}</h2>
+                <p className="mt-1 text-sm font-semibold text-primary">{slide.label}</p>
+                <ul className="mt-4 space-y-3">
+                  {slide.items.map((it, i) => (
+                    <li key={i} className="flex gap-3 text-base leading-relaxed md:text-lg">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sage text-sm font-bold">{i + 1}</span>
+                      <span>{it}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
             {slide.kind === "jurnal" && (
@@ -136,17 +165,32 @@ function MateriPage() {
           </div>
         </div>
 
+        {voiceOk && (
+          <div className="card-soft mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 p-4 text-sm">
+            <span className="font-semibold">🔊 Audio narasi</span>
+            {talking && !paused && <button className="btn btn-outline px-3 py-1.5" onClick={pause}>⏸ Jeda</button>}
+            {talking && paused && <button className="btn btn-outline px-3 py-1.5" onClick={resume}>▶ Lanjutkan</button>}
+            {!talking && <button className="btn btn-outline px-3 py-1.5" onClick={play}>▶ Putar slide ini</button>}
+            {talking && <button className="btn btn-outline px-3 py-1.5" onClick={stop}>⏹ Berhenti</button>}
+            <label className="flex items-center gap-2">Volume
+              <input type="range" min={0} max={1} step={0.1} value={volume} onChange={(e) => setVolume(Number(e.target.value))} className="w-24 accent-primary" />
+            </label>
+            <label className="flex items-center gap-2">Kecepatan
+              <select className="field w-auto px-2 py-1" value={rate} onChange={(e) => setRate(Number(e.target.value))}>
+                <option value={0.75}>Pelan</option>
+                <option value={0.95}>Normal</option>
+                <option value={1.2}>Cepat</option>
+              </select>
+            </label>
+          </div>
+        )}
+
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           <button className="btn btn-outline" disabled={mi === 0 && si === 0} onClick={() => go(-1)}>← Sebelumnya</button>
-          {voiceOk && (
-            talking
-              ? <button className="btn btn-outline" onClick={stop}>⏹ Hentikan suara</button>
-              : <button className="btn btn-outline" onClick={play}>🔊 Dengarkan slide ini</button>
-          )}
           {last && mi === MATERI.length - 1 ? (
             <Link to="/simulasi" className="btn btn-primary">Lanjut ke Simulasi →</Link>
           ) : (
-            <button className="btn btn-primary" onClick={() => go(1)}>{last ? "Modul berikutnya →" : "Berikutnya →"}</button>
+            <button className="btn btn-primary" onClick={() => go(1)}>{last ? "Bab berikutnya →" : "Berikutnya →"}</button>
           )}
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">

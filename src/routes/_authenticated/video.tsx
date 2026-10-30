@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { PageTitle } from "@/components/SiteHeader";
 import { MATERI } from "@/lib/materi";
 
-export const Route = createFileRoute("/video")({
+export const Route = createFileRoute("/_authenticated/video")({
   head: () => ({
     meta: [
       { title: "Video Pembelajaran — ADJUSTIFY" },
-      { name: "description", content: "Kumpulan ruang video pembelajaran jurnal penyesuaian per submateri." },
+      { name: "description", content: "Kumpulan ruang video pembelajaran jurnal penyesuaian per bab." },
       { property: "og:title", content: "Video Pembelajaran — ADJUSTIFY" },
-      { property: "og:description", content: "Video jurnal penyesuaian dikelompokkan per submateri." },
+      { property: "og:description", content: "Video jurnal penyesuaian dikelompokkan per bab." },
     ],
   }),
   component: VideoPage,
@@ -33,7 +33,7 @@ function VideoPage() {
 
   return (
     <>
-      <PageTitle tag="Video" title="Video Pembelajaran" desc="Setiap submateri memiliki ruang video. Tempel tautan YouTube yang dibagikan dosen untuk menampilkannya di sini." />
+      <PageTitle tag="Video" title="Video Pembelajaran" desc="Setiap bab memiliki ruang video. Tempel tautan YouTube yang dibagikan dosen untuk menampilkannya di sini." />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-2">
         {MATERI.map((m) => {
           const id = links[m.slug] ? youtubeId(links[m.slug]!) : null;

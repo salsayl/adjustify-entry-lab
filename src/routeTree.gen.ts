@@ -10,83 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as HasilRouteImport } from './routes/hasil'
-import { Route as KuisRouteImport } from './routes/kuis'
-import { Route as MateriRouteImport } from './routes/materi'
-import { Route as SimulasiRouteImport } from './routes/simulasi'
-import { Route as VideoRouteImport } from './routes/video'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedArsipRouteImport } from './routes/_authenticated/arsip'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedHasilRouteImport } from './routes/_authenticated/hasil'
+import { Route as AuthenticatedKuisRouteImport } from './routes/_authenticated/kuis'
+import { Route as AuthenticatedMateriRouteImport } from './routes/_authenticated/materi'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedSimulasiRouteImport } from './routes/_authenticated/simulasi'
+import { Route as AuthenticatedVideoRouteImport } from './routes/_authenticated/video'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HasilRoute = HasilRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedArsipRoute = AuthenticatedArsipRouteImport.update({
+  id: '/arsip',
+  path: '/arsip',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHasilRoute = AuthenticatedHasilRouteImport.update({
   id: '/hasil',
   path: '/hasil',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const KuisRoute = KuisRouteImport.update({
+const AuthenticatedKuisRoute = AuthenticatedKuisRouteImport.update({
   id: '/kuis',
   path: '/kuis',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const MateriRoute = MateriRouteImport.update({
+const AuthenticatedMateriRoute = AuthenticatedMateriRouteImport.update({
   id: '/materi',
   path: '/materi',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const SimulasiRoute = SimulasiRouteImport.update({
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSimulasiRoute = AuthenticatedSimulasiRouteImport.update({
   id: '/simulasi',
   path: '/simulasi',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const VideoRoute = VideoRouteImport.update({
+const AuthenticatedVideoRoute = AuthenticatedVideoRouteImport.update({
   id: '/video',
   path: '/video',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/hasil': typeof HasilRoute
-  '/kuis': typeof KuisRoute
-  '/materi': typeof MateriRoute
-  '/simulasi': typeof SimulasiRoute
-  '/video': typeof VideoRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/arsip': typeof AuthenticatedArsipRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/hasil': typeof AuthenticatedHasilRoute
+  '/kuis': typeof AuthenticatedKuisRoute
+  '/materi': typeof AuthenticatedMateriRoute
+  '/profil': typeof AuthenticatedProfilRoute
+  '/simulasi': typeof AuthenticatedSimulasiRoute
+  '/video': typeof AuthenticatedVideoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/hasil': typeof HasilRoute
-  '/kuis': typeof KuisRoute
-  '/materi': typeof MateriRoute
-  '/simulasi': typeof SimulasiRoute
-  '/video': typeof VideoRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/arsip': typeof AuthenticatedArsipRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/hasil': typeof AuthenticatedHasilRoute
+  '/kuis': typeof AuthenticatedKuisRoute
+  '/materi': typeof AuthenticatedMateriRoute
+  '/profil': typeof AuthenticatedProfilRoute
+  '/simulasi': typeof AuthenticatedSimulasiRoute
+  '/video': typeof AuthenticatedVideoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/hasil': typeof HasilRoute
-  '/kuis': typeof KuisRoute
-  '/materi': typeof MateriRoute
-  '/simulasi': typeof SimulasiRoute
-  '/video': typeof VideoRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/arsip': typeof AuthenticatedArsipRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/hasil': typeof AuthenticatedHasilRoute
+  '/_authenticated/kuis': typeof AuthenticatedKuisRoute
+  '/_authenticated/materi': typeof AuthenticatedMateriRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/simulasi': typeof AuthenticatedSimulasiRoute
+  '/_authenticated/video': typeof AuthenticatedVideoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/hasil' | '/kuis' | '/materi' | '/simulasi' | '/video'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/arsip'
+    | '/dashboard'
+    | '/hasil'
+    | '/kuis'
+    | '/materi'
+    | '/profil'
+    | '/simulasi'
+    | '/video'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hasil' | '/kuis' | '/materi' | '/simulasi' | '/video'
-  id: '__root__' | '/' | '/hasil' | '/kuis' | '/materi' | '/simulasi' | '/video'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/arsip'
+    | '/dashboard'
+    | '/hasil'
+    | '/kuis'
+    | '/materi'
+    | '/profil'
+    | '/simulasi'
+    | '/video'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/reset-password'
+    | '/_authenticated/arsip'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/hasil'
+    | '/_authenticated/kuis'
+    | '/_authenticated/materi'
+    | '/_authenticated/profil'
+    | '/_authenticated/simulasi'
+    | '/_authenticated/video'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  HasilRoute: typeof HasilRoute
-  KuisRoute: typeof KuisRoute
-  MateriRoute: typeof MateriRoute
-  SimulasiRoute: typeof SimulasiRoute
-  VideoRoute: typeof VideoRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -98,51 +182,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hasil': {
-      id: '/hasil'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/arsip': {
+      id: '/_authenticated/arsip'
+      path: '/arsip'
+      fullPath: '/arsip'
+      preLoaderRoute: typeof AuthenticatedArsipRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/hasil': {
+      id: '/_authenticated/hasil'
       path: '/hasil'
       fullPath: '/hasil'
-      preLoaderRoute: typeof HasilRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedHasilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/kuis': {
-      id: '/kuis'
+    '/_authenticated/kuis': {
+      id: '/_authenticated/kuis'
       path: '/kuis'
       fullPath: '/kuis'
-      preLoaderRoute: typeof KuisRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedKuisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/materi': {
-      id: '/materi'
+    '/_authenticated/materi': {
+      id: '/_authenticated/materi'
       path: '/materi'
       fullPath: '/materi'
-      preLoaderRoute: typeof MateriRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedMateriRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/simulasi': {
-      id: '/simulasi'
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/simulasi': {
+      id: '/_authenticated/simulasi'
       path: '/simulasi'
       fullPath: '/simulasi'
-      preLoaderRoute: typeof SimulasiRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSimulasiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/video': {
-      id: '/video'
+    '/_authenticated/video': {
+      id: '/_authenticated/video'
       path: '/video'
       fullPath: '/video'
-      preLoaderRoute: typeof VideoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedVideoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedArsipRoute: typeof AuthenticatedArsipRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHasilRoute: typeof AuthenticatedHasilRoute
+  AuthenticatedKuisRoute: typeof AuthenticatedKuisRoute
+  AuthenticatedMateriRoute: typeof AuthenticatedMateriRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedSimulasiRoute: typeof AuthenticatedSimulasiRoute
+  AuthenticatedVideoRoute: typeof AuthenticatedVideoRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedArsipRoute: AuthenticatedArsipRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHasilRoute: AuthenticatedHasilRoute,
+  AuthenticatedKuisRoute: AuthenticatedKuisRoute,
+  AuthenticatedMateriRoute: AuthenticatedMateriRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedSimulasiRoute: AuthenticatedSimulasiRoute,
+  AuthenticatedVideoRoute: AuthenticatedVideoRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  HasilRoute: HasilRoute,
-  KuisRoute: KuisRoute,
-  MateriRoute: MateriRoute,
-  SimulasiRoute: SimulasiRoute,
-  VideoRoute: VideoRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
