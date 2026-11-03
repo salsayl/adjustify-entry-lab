@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { PageTitle } from "@/components/SiteHeader";
 import { JurnalTable } from "@/components/JurnalTable";
 import { rupiah } from "@/lib/accounting";
@@ -46,7 +47,9 @@ function SimPage() {
     setTries(n);
     setChecked(true);
     playFeedback(allOk);
-    actions.saveSimulation(sim.id, allOk, n).catch(() => {});
+    actions.saveSimulation(sim.id, allOk, n).catch(() => {
+      toast.error("Jawaban simulasi gagal disimpan. Coba lagi ya.");
+    });
   };
 
   return (

@@ -135,7 +135,7 @@ export const MATERI: Materi[] = [
       "Pendekatan beban: saat bayar dicatat sebagai beban; penyesuaian mengakui bagian yang belum terpakai sebagai aset. Hasil akhir kedua pendekatan sama.",
     ],
     penjelasan:
-      "Anggap kamu membayar sewa kios untuk 12 bulan. Setiap bulan berlalu, sepertiga belas... bukan — setiap bulan, 1/12 bagian sewa itu berubah dari aset menjadi beban. Di akhir periode, hitung berapa bulan yang sudah lewat, kalikan dengan biaya per bulan. Itulah nominal penyesuaiannya.",
+      "Anggap kamu membayar sewa kios untuk 12 bulan. Setiap bulan berlalu, 1/12 bagian sewa itu berubah dari aset menjadi beban. Di akhir periode, hitung berapa bulan yang sudah lewat, kalikan dengan biaya per bulan. Itulah nominal penyesuaiannya.",
     ilustrasi:
       "1 Oktober dibayar sewa toko untuk 12 bulan. Pada 31 Desember, 3 bulan sudah terpakai dan 9 bulan masih menjadi aset.",
     rumus: "Beban terpakai = (Total pembayaran ÷ Jumlah bulan) × Bulan yang sudah lewat",

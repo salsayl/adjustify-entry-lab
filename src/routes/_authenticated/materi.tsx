@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { PageTitle } from "@/components/SiteHeader";
 import { JurnalTable } from "@/components/JurnalTable";
 import { MATERI } from "@/lib/materi";
@@ -39,8 +40,10 @@ function MateriPage() {
 
   useEffect(() => setVoiceOk(canSpeak()), []);
   useEffect(() => {
-    if (last) actions.markMateri(m.slug, true, si).catch(() => {});
-    else actions.markMateri(m.slug, readSlugs.has(m.slug), si).catch(() => {});
+    const completed = last ? true : readSlugs.has(m.slug);
+    actions.markMateri(m.slug, completed, si).catch(() => {
+      toast.error("Progres belajar gagal disimpan. Periksa koneksi internetmu.", { id: "progres-materi" });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [last, m.slug, si]);
 
