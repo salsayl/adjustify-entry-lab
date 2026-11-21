@@ -14,3 +14,6 @@
 - [x] Rekomendasi belajar otomatis berdasarkan jawaban salah per topik
 - [x] Navigasi menyesuaikan status login
 - [ ] Tes rumus akuntansi + verifikasi alur end-to-end (build, tes, uji browser)
+- [ ] Terapkan file pembaruan: palet, beranda, tujuan, struktur tujuh bab, footer developer.
+- [ ] Gunakan PDF materi kiriman hanya Bab 1–7 dalam presentasi bersuara.
+- [ ] Verifikasi pembaruan pada laptop dan HP.
