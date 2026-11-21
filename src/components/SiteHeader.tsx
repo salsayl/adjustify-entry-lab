@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import unsLogo from "@/assets/logo_uns.png.asset.json";
 
 const NAV_PUBLIC = [{ to: "/", label: "Beranda" }] as const;
 const NAV_PRIVATE = [
@@ -43,8 +44,10 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link to={signedIn ? "/dashboard" : "/"} className="flex items-center gap-2 font-display text-xl font-bold text-primary">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-lavender">Σ</span>
+        <Link to={signedIn ? "/dashboard" : "/"} className="flex items-center gap-2.5 font-display text-xl font-bold text-primary">
+          <img src={unsLogo.url} alt="Logo Universitas Sebelas Maret" className="h-9 w-9 shrink-0 object-contain" />
+          <span aria-hidden="true" className="h-7 w-px bg-border" />
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-lavender">Σ</span>
           ADJUSTIFY
         </Link>
         <nav className="hidden items-center gap-1 lg:flex">
