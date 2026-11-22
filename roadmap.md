@@ -15,5 +15,5 @@
 - [x] Navigasi menyesuaikan status login
 - [ ] Tes rumus akuntansi + verifikasi alur end-to-end (build, tes, uji browser)
 - [ ] Terapkan file pembaruan: palet, beranda, tujuan, struktur tujuh bab, footer developer.
-- [ ] Gunakan PDF materi kiriman hanya Bab 1–7 dalam presentasi bersuara.
+- [ ] Gunakan PDF materi kiriman hanya Bab 1–7 dalam presentasi tanpa audio.
 - [ ] Verifikasi pembaruan pada laptop dan HP.

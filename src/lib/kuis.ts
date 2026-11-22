@@ -17,7 +17,6 @@ export const KUIS: Q[] = [
   { kind: "pg", level: "Sulit", topic: "penyusutan", q: "Mesin Rp60.000.000, residu Rp6.000.000, umur 6 tahun, dibeli 1 Mei. Penyusutan tahun pertama (31 Des) adalah …", options: ["Rp9.000.000", "Rp6.000.000", "Rp10.000.000", "Rp7.500.000"], answer: 1, why: "(Rp60.000.000 − Rp6.000.000) ÷ 6 = Rp9.000.000/tahun × 8/12 (Mei–Desember) = Rp6.000.000." },
   { kind: "hitung", level: "Sulit", topic: "pendapatan-dimuka", q: "1 November diterima sewa Rp7.200.000 untuk 6 bulan (dicatat sebagai Sewa Diterima di Muka). Berapa pendapatan sewa yang diakui per 31 Desember?", answer: 2400000, why: "Rp7.200.000 ÷ 6 × 2 bulan (November–Desember) = Rp2.400.000." },
   { kind: "hitung", level: "Sulit", topic: "pendapatan-akrual", q: "Wesel Rp15.000.000 berbunga 10% per tahun diterima 1 September. Berapa piutang bunga per 31 Desember?", answer: 500000, why: "Rp15.000.000 × 10% × 4/12 (September–Desember) = Rp500.000." },
-  { kind: "pg", level: "Sulit", topic: "persediaan", q: "Dengan pendekatan ikhtisar laba rugi, persediaan akhir barang dagang dicatat …", options: ["Ikhtisar Laba Rugi (D) – Persediaan (K)", "Persediaan (D) – Ikhtisar Laba Rugi (K)", "HPP (D) – Persediaan (K)", "Persediaan (D) – Pembelian (K)"], answer: 1, why: "Persediaan akhir dimunculkan sebagai aset (debit) dengan lawan Ikhtisar Laba Rugi (kredit). Jurnal pertama justru menutup persediaan awal." },
 ];
 
 export function motivasi(pct: number) {

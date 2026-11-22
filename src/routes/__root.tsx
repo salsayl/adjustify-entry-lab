@@ -105,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <HeadContent />
       </head>
@@ -140,7 +140,8 @@ function RootComponent() {
         <Outlet />
       </main>
       <footer className="mt-16 border-t bg-cream py-8 text-center text-sm text-muted-foreground">
-        ADJUSTIFY · Learn. Practice. Understand.
+        <p>ADJUSTIFY · Learn. Practice. Understand.</p>
+        <p className="mt-3 text-xs">Developed by: Anwar, Fian, Pipit, Salsa, Bila</p>
       </footer>
     </QueryClientProvider>
   );

@@ -1,205 +1,156 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, BookOpen, Check } from "lucide-react";
 import { toast } from "sonner";
 import { PageTitle } from "@/components/SiteHeader";
+import { Button } from "@/components/ui/button";
 import { JurnalTable } from "@/components/JurnalTable";
 import { MATERI } from "@/lib/materi";
 import { buildSlides } from "@/lib/slides";
-import { canSpeak, pauseSpeak, resumeSpeak, speak, stopSpeak } from "@/lib/sound";
 import { useLearning, useLearningActions } from "@/lib/learning";
 
 export const Route = createFileRoute("/_authenticated/materi")({
-  head: () => ({
-    meta: [
-      { title: "Materi Jurnal Penyesuaian — ADJUSTIFY" },
-      { name: "description", content: "Materi jurnal penyesuaian 8 bab dalam bentuk slide bersuara, lengkap dengan rumus, contoh soal, dan jurnal." },
-      { property: "og:title", content: "Materi Jurnal Penyesuaian — ADJUSTIFY" },
-      { property: "og:description", content: "Slide materi jurnal penyesuaian dengan narasi suara." },
-    ],
-  }),
+  head: () => ({ meta: [
+    { title: "Materi 7 Bab Jurnal Penyesuaian — ADJUSTIFY" },
+    { name: "description", content: "Presentasi interaktif tujuh bab jurnal penyesuaian, dengan konsep akrual, rumus, contoh jurnal, dan pembahasan latihan." },
+    { property: "og:title", content: "Materi 7 Bab — ADJUSTIFY" },
+    { property: "og:description", content: "Pelajari jurnal penyesuaian secara bertahap melalui materi Bab 1–7." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: MateriPage,
 });
 
 function MateriPage() {
   const [mi, setMi] = useState(0);
   const [si, setSi] = useState(0);
-  const [auto, setAuto] = useState(false);
-  const [talking, setTalking] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [rate, setRate] = useState(0.95);
-  const [volume, setVolume] = useState(1);
-  const [voiceOk, setVoiceOk] = useState(true);
   const { data: learning } = useLearning();
   const actions = useLearningActions();
-  const m = MATERI[mi]!;
-  const slides = useMemo(() => buildSlides(m), [m]);
-  const slide = slides[si]!;
+  const m = MATERI[mi];
+  const slides = useMemo(() => m ? buildSlides(m) : [], [m]);
+  const slide = slides[si];
   const last = si === slides.length - 1;
   const touchX = useRef<number | null>(null);
-  const readSlugs = new Set((learning?.materi ?? []).filter((x) => x.completed).map((x) => x.materi_slug));
+  const completed = !!m && !!learning?.materi.some((x) => x.materi_slug === m.slug && x.completed);
 
-  useEffect(() => setVoiceOk(canSpeak()), []);
   useEffect(() => {
-    const completed = last ? true : readSlugs.has(m.slug);
-    actions.markMateri(m.slug, completed, si).catch(() => {
+    if (!m || !learning) return;
+    actions.markMateri(m.slug, last || completed, si).catch(() => {
       toast.error("Progres belajar gagal disimpan. Periksa koneksi internetmu.", { id: "progres-materi" });
     });
+    // Saving depends on slide navigation, not cache invalidation after the write.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [last, m.slug, si]);
+  }, [m?.slug, last, si, !!learning]);
 
-  const play = () => {
-    setPaused(false);
-    setTalking(true);
-    speak(slide.narasi, { rate, volume, onEnd: () => { setTalking(false); setPaused(false); } });
-  };
-  const pause = () => { pauseSpeak(); setPaused(true); };
-  const resume = () => { resumeSpeak(); setPaused(false); };
-  const stop = () => { stopSpeak(); setTalking(false); setPaused(false); };
-
-  useEffect(() => {
-    if (auto) play(); else stop();
-    return () => stopSpeak();
-  }, [mi, si, auto]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const go = (d: number) => {
+  const go = useCallback((d: number) => {
     const n = si + d;
     if (n >= 0 && n < slides.length) setSi(n);
     else if (n >= slides.length && mi < MATERI.length - 1) { setMi(mi + 1); setSi(0); }
-    else if (n < 0 && mi > 0) { setMi(mi - 1); setSi(buildSlides(MATERI[mi - 1]!).length - 1); }
-  };
+    else if (n < 0 && mi > 0) {
+      const previous = MATERI[mi - 1];
+      if (!previous) return;
+      setMi(mi - 1); setSi(buildSlides(previous).length - 1);
+    }
+  }, [mi, si, slides.length]);
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).tagName === "SELECT") return;
-      if (e.key === "ArrowRight") go(1);
-      if (e.key === "ArrowLeft") go(-1);
+      if (e.target instanceof HTMLElement && ["SELECT", "INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); go(1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
     };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
-  });
+  }, [go]);
 
+  if (!m || !slide) return null;
   return (
     <>
-      <PageTitle tag="Materi" title="Materi 8 Bab (Slide Bersuara)" desc="Pelajari jurnal penyesuaian bab demi bab, slide demi slide. Tekan ▶ untuk mendengarkan penjelasannya." />
-      <div className="mx-auto max-w-5xl px-4 py-8">
-        <div className="flex flex-wrap items-center gap-3">
-          <select className="field max-w-md" value={mi} onChange={(e) => { setMi(Number(e.target.value)); setSi(0); }}>
-            {MATERI.map((x, i) => (
-              <option key={x.slug} value={i}>
-                {readSlugs.has(x.slug) ? "✓ " : ""}{x.title}
-              </option>
-            ))}
-          </select>
-          {voiceOk && (
-            <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
-              <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} className="h-4 w-4 accent-primary" />
-              Bacakan otomatis setiap slide
-            </label>
-          )}
-        </div>
-
-        <div
-          className="card-soft relative mt-5 flex min-h-[420px] flex-col overflow-hidden md:aspect-[16/9] md:min-h-0"
-          onTouchStart={(e) => (touchX.current = e.touches[0]!.clientX)}
-          onTouchEnd={(e) => {
-            if (touchX.current === null) return;
-            const dx = e.changedTouches[0]!.clientX - touchX.current;
-            if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
-            touchX.current = null;
-          }}
-        >
-          <div className="flex items-center justify-between border-b bg-muted/60 px-5 py-2 text-xs font-semibold text-muted-foreground">
-            <span>{m.title}</span>
-            <span>{si + 1} / {slides.length}</span>
-          </div>
-          <div key={`${mi}-${si}`} className="fade-up flex flex-1 flex-col justify-center p-6 md:p-10">
-            {slide.kind === "judul" && (
-              <div className="text-center">
-                <div className="float-slow mx-auto grid h-24 w-24 place-items-center rounded-3xl bg-lavender text-5xl">{slide.icon}</div>
-                <h2 className="mt-6 text-3xl font-bold md:text-5xl">{slide.title}</h2>
-                <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">{slide.text}</p>
+      <PageTitle tag="Materi" title="Materi 7 Bab" desc="Jurnal penyesuaian · Konsep, perhitungan, dan pencatatan" />
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)]">
+          <aside>
+            <p className="mb-3 flex items-center gap-2 text-sm font-semibold"><BookOpen size={16} /> Daftar bab</p>
+            <select aria-label="Pilih bab" className="field lg:hidden" value={mi} onChange={(e) => { setMi(Number(e.target.value)); setSi(0); }}>
+              {MATERI.map((x, i) => <option key={x.slug} value={i}>{x.title}</option>)}
+            </select>
+            <div className="hidden space-y-1 lg:block">
+              {MATERI.map((x, i) => (
+                <Button key={x.slug} variant="ghost" aria-current={mi === i ? "step" : undefined}
+                  className={`h-auto w-full justify-start whitespace-normal px-3 py-3 text-left leading-relaxed ${mi === i ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : ""}`}
+                  onClick={() => { setMi(i); setSi(0); }}>
+                  <span className="shrink-0 text-base">{x.icon}</span>
+                  <span className="min-w-0 flex-1">{x.title}</span>
+                  {learning?.materi.some((r) => r.materi_slug === x.slug && r.completed) && <Check size={14} />}
+                </Button>
+              ))}
+            </div>
+          </aside>
+          <div className="min-w-0">
+            <div className="overflow-hidden rounded-lg border bg-card"
+              onTouchStart={(e) => { touchX.current = e.touches[0]?.clientX ?? null; }}
+              onTouchEnd={(e) => {
+                const end = e.changedTouches[0]?.clientX;
+                if (touchX.current !== null && end !== undefined && Math.abs(end - touchX.current) > 50) go(end < touchX.current ? 1 : -1);
+                touchX.current = null;
+              }}>
+              <div className="flex items-center justify-between gap-3 border-b bg-muted/60 px-4 py-3 text-xs font-semibold text-muted-foreground">
+                <span className="min-w-0">{m.title}</span>
+                <span className="shrink-0" aria-live="polite">{si + 1} / {slides.length}</span>
               </div>
-            )}
-            {slide.kind === "poin" && (
-              <div className="flex items-start gap-5">
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-sage font-display text-2xl font-bold">{slide.no}</span>
-                <div>
-                  <p className="text-sm font-semibold text-primary">Poin penting</p>
-                  <p className="mt-2 text-xl leading-relaxed md:text-3xl md:leading-snug">{slide.text}</p>
-                </div>
+              <div key={`${mi}-${si}`} className="fade-up flex min-h-[420px] flex-col justify-center p-5 sm:min-h-[480px] sm:p-10">
+                {slide.kind === "judul" && (
+                  <div>
+                    <div className="mb-8 text-5xl" aria-hidden="true">{slide.icon}</div>
+                    <p className="text-sm font-semibold text-muted-foreground">JURNAL PENYESUAIAN</p>
+                    <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">{slide.title}</h2>
+                    <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">{slide.text}</p>
+                  </div>
+                )}
+                {slide.kind === "kotak" && (
+                  <div>
+                    <p className="mb-3 text-sm font-semibold text-muted-foreground">{slide.label}</p>
+                    <h2 className="text-2xl font-bold sm:text-3xl">{slide.title}</h2>
+                    <div className={`mt-7 border-l-4 pl-5 ${slide.tone === "cream" ? "border-primary" : "border-accent"}`}>
+                      <p className="text-lg leading-relaxed sm:text-xl">{slide.text}</p>
+                    </div>
+                  </div>
+                )}
+                {slide.kind === "list" && (
+                  <div>
+                    <p className="mb-3 text-sm font-semibold text-muted-foreground">{slide.label}</p>
+                    <h2 className="text-2xl font-bold sm:text-3xl">{slide.title}</h2>
+                    <ol start={slide.start} className="mt-6 space-y-5">
+                      {slide.items.map((it, i) => (
+                        <li key={i} className="flex gap-3 text-base leading-relaxed sm:text-lg">
+                          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sage text-sm font-bold">{slide.start + i}</span>
+                          <span className="min-w-0">{it}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+                {slide.kind === "jurnal" && (
+                  <div className="min-w-0">
+                    <h2 className="mb-6 text-2xl font-bold sm:text-3xl">{slide.title}</h2>
+                    {slide.soal && <p className="mb-4">{slide.soal}</p>}
+                    {slide.jawab && <p className="mb-4">{slide.jawab}</p>}
+                    <JurnalTable rows={slide.jurnal} />
+                  </div>
+                )}
               </div>
-            )}
-            {slide.kind === "kotak" && (
-              <div>
-                <h2 className="text-2xl font-bold md:text-4xl">{slide.title}</h2>
-                <div className={`mt-6 rounded-3xl p-6 md:p-8 ${slide.tone === "cream" ? "bg-cream" : "bg-pink"}`}>
-                  <p className="text-sm font-semibold">{slide.label}</p>
-                  <p className="mt-2 text-lg font-medium leading-relaxed md:text-xl">{slide.text}</p>
-                </div>
-              </div>
-            )}
-            {slide.kind === "list" && (
-              <div>
-                <h2 className="text-2xl font-bold md:text-4xl">{slide.title}</h2>
-                <p className="mt-1 text-sm font-semibold text-primary">{slide.label}</p>
-                <ul className="mt-4 space-y-3">
-                  {slide.items.map((it, i) => (
-                    <li key={i} className="flex gap-3 text-base leading-relaxed md:text-lg">
-                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-sage text-sm font-bold">{i + 1}</span>
-                      <span>{it}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {slide.kind === "jurnal" && (
-              <div className="grid gap-5 md:grid-cols-2 md:items-center">
-                <div>
-                  <h2 className="text-2xl font-bold md:text-3xl">{slide.title}</h2>
-                  <p className="mt-3">{slide.soal}</p>
-                  <p className="mt-3 rounded-2xl bg-pink p-3 text-sm"><b>Perhitungan:</b> {slide.jawab}</p>
-                </div>
-                <JurnalTable rows={slide.jurnal} />
-              </div>
-            )}
-          </div>
-          <div className="h-1.5 bg-muted">
-            <div className="h-full bg-primary transition-all" style={{ width: `${((si + 1) / slides.length) * 100}%` }} />
+              <progress aria-label="Progres slide" value={si + 1} max={slides.length} className="block h-1.5 w-full accent-primary" />
+            </div>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <Button variant="outline" disabled={mi === 0 && si === 0} onClick={() => go(-1)}><ArrowLeft /> Sebelumnya</Button>
+              {last && mi === MATERI.length - 1 ? (
+                <Button asChild><Link to="/simulasi">Lanjut ke Simulasi <ArrowRight /></Link></Button>
+              ) : (
+                <Button onClick={() => go(1)}>{last ? "Bab berikutnya" : "Berikutnya"} <ArrowRight /></Button>
+              )}
+            </div>
           </div>
         </div>
-
-        {voiceOk && (
-          <div className="card-soft mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 p-4 text-sm">
-            <span className="font-semibold">🔊 Audio narasi</span>
-            {talking && !paused && <button className="btn btn-outline px-3 py-1.5" onClick={pause}>⏸ Jeda</button>}
-            {talking && paused && <button className="btn btn-outline px-3 py-1.5" onClick={resume}>▶ Lanjutkan</button>}
-            {!talking && <button className="btn btn-outline px-3 py-1.5" onClick={play}>▶ Putar slide ini</button>}
-            {talking && <button className="btn btn-outline px-3 py-1.5" onClick={stop}>⏹ Berhenti</button>}
-            <label className="flex items-center gap-2">Volume
-              <input type="range" min={0} max={1} step={0.1} value={volume} onChange={(e) => setVolume(Number(e.target.value))} className="w-24 accent-primary" />
-            </label>
-            <label className="flex items-center gap-2">Kecepatan
-              <select className="field w-auto px-2 py-1" value={rate} onChange={(e) => setRate(Number(e.target.value))}>
-                <option value={0.75}>Pelan</option>
-                <option value={0.95}>Normal</option>
-                <option value={1.2}>Cepat</option>
-              </select>
-            </label>
-          </div>
-        )}
-
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <button className="btn btn-outline" disabled={mi === 0 && si === 0} onClick={() => go(-1)}>← Sebelumnya</button>
-          {last && mi === MATERI.length - 1 ? (
-            <Link to="/simulasi" className="btn btn-primary">Lanjut ke Simulasi →</Link>
-          ) : (
-            <button className="btn btn-primary" onClick={() => go(1)}>{last ? "Bab berikutnya →" : "Berikutnya →"}</button>
-          )}
-        </div>
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Tips: gunakan tombol panah ← → di keyboard, atau geser slide di HP.
-          {!voiceOk && " Browser ini belum mendukung suara."}
-        </p>
       </div>
     </>
   );

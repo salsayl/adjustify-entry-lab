@@ -19,7 +19,7 @@ function DashboardPage() {
   const { data: profile } = useProfile();
   const { data, isLoading } = useLearning();
 
-  const materiDone = new Set((data?.materi ?? []).filter((m) => m.completed).map((m) => m.materi_slug));
+  const materiDone = new Set((data?.materi ?? []).filter((m) => m.completed && MATERI.some((chapter) => chapter.slug === m.materi_slug)).map((m) => m.materi_slug));
   const simBenar = new Set((data?.sims ?? []).filter((s) => s.is_correct).map((s) => s.sim_id));
   const lastQuiz = data?.quizzes[0];
   const rekom = lastQuiz ? hitungRekomendasi(lastQuiz.answers) : [];
